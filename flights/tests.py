@@ -24,10 +24,28 @@ class FlightListTest(APITestCase):
 		response = self.client.get(reverse('flights-list'))
 		flights = Flight.objects.all()
 		self.assertEqual(len(response.data), flights.count())
-		flight = flights[0]
-		self.assertEqual(dict(response.data[0]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
-		flight = flights[1]
-		self.assertEqual(dict(response.data[1]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
+		for index, flight in enumerate(flights):
+			self.assertEqual(dict(response.data[index]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
+
+	def test_list_search(self):
+		response = self.client.get(reverse('flights-list'), {"search":"wak"})
+		flights = Flight.objects.filter(destination__icontains="wak")
+		self.assertEqual(len(response.data), flights.count())
+		for index, flight in enumerate(flights):
+			self.assertEqual(dict(response.data[index]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
+
+	def test_list_order(self):
+		response = self.client.get(reverse('flights-list'), {"ordering":"price"})
+		flights = Flight.objects.all().order_by("price")
+		self.assertEqual(len(response.data), flights.count())
+		for index, flight in enumerate(flights):
+			self.assertEqual(dict(response.data[index]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
+
+		response = self.client.get(reverse('flights-list'), {"ordering":"-price"})
+		flights = Flight.objects.all().order_by("-price")
+		self.assertEqual(len(response.data), flights.count())
+		for index, flight in enumerate(flights):
+			self.assertEqual(dict(response.data[index]), {"id" : flight.id, "destination" : flight.destination, "time": str(flight.time), "price": str(flight.price)})
 
 
 class BookingListTest(APITestCase):
