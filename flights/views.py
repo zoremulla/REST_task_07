@@ -28,7 +28,6 @@ class BookingDetails(RetrieveAPIView):
 	permission_classes = [IsAuthenticated, IsBookingOwner]
 
 
-
 class UpdateBooking(RetrieveUpdateAPIView):
 	queryset = Booking.objects.all()
 	lookup_field = 'id'
@@ -50,7 +49,7 @@ class CancelBooking(DestroyAPIView):
 
 
 class BookFlight(CreateAPIView):
-	serializer_class = UpdateBookingSerializer
+	serializer_class = AdminUpdateBookingSerializer
 	permission_classes = [IsAuthenticated]
 
 	def perform_create(self, serializer):
@@ -59,3 +58,5 @@ class BookFlight(CreateAPIView):
 
 class Register(CreateAPIView):
 	serializer_class = RegisterSerializer
+
+	
